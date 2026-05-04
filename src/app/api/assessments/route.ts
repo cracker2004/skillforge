@@ -10,7 +10,7 @@ const optionSchema = z.object({
 });
 
 const questionSchema = z.object({
-  text: z.string().min(5),
+  text: z.string().min(1),
   type: z.enum(["mcq", "true_false"]),
   options: z.array(optionSchema).min(2).max(6),
   explanation: z.string().optional(),
@@ -19,7 +19,7 @@ const questionSchema = z.object({
 
 const createAssessmentSchema = z.object({
   title: z.string().min(3).max(100),
-  description: z.string().min(10).max(1000),
+  description: z.string().min(3).max(1000),
   category: z.string().min(2).max(50),
   difficulty: z.enum(["beginner", "intermediate", "advanced"]),
   questions: z.array(questionSchema).min(1).max(50),
@@ -75,6 +75,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const parsed = createAssessmentSchema.safeParse(body);
     if (!parsed.success) {
+      console.error("Validation errors:", JSON.stringify(parsed.error.flatten(), null, 2));
       return NextResponse.json({ error: "Validation failed", details: parsed.error.flatten() }, { status: 400 });
     }
 
