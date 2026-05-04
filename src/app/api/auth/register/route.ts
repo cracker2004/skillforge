@@ -33,7 +33,9 @@ export async function POST(req: NextRequest) {
       { message: "Account created successfully", userId: user._id.toString() },
       { status: 201 }
     );
-  } catch {
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  } catch (error) {
+    console.error("Register error:", error);
+    const message = error instanceof Error ? error.message : "Internal server error";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
