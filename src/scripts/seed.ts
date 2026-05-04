@@ -1,5 +1,21 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
+import { readFileSync } from "fs";
+import { resolve } from "path";
+
+// Load .env.local since tsx doesn't auto-load it
+try {
+  const envFile = readFileSync(resolve(process.cwd(), ".env.local"), "utf-8");
+  for (const line of envFile.split("\n")) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#")) continue;
+    const eqIndex = trimmed.indexOf("=");
+    if (eqIndex === -1) continue;
+    const key = trimmed.slice(0, eqIndex).trim();
+    const val = trimmed.slice(eqIndex + 1).trim();
+    if (!process.env[key]) process.env[key] = val;
+  }
+} catch {}
 
 const MONGODB_URI = process.env.MONGODB_URI ?? "mongodb://localhost:27017/skillforge";
 
